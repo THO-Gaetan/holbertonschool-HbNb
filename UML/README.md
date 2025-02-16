@@ -1,5 +1,7 @@
 # HBnB UML Project
 
+![alt text](uml_banner.jpg)
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [High-Level Architecture](#high-level-architecture)
@@ -58,9 +60,22 @@ This section presents the detailed class diagram for the Business Logic Layer, e
 
 ## API Interaction Flow
 
-### Sequence Diagrams for API Calls
+
+### User Registration
 
 ![alt text](2-user_registration.png)
+
+### Place Creation
+
+![alt text](2-place_creation.png)
+
+### Review Submission
+
+![alt text](2-review_submission.png)
+
+### Fetching places list
+
+![alt text](2-Fetching_places_list.png)
 
 ### Explanation
 This section includes sequence diagrams for selected API calls, providing explanations of the interactions and data flow between components.
