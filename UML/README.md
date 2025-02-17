@@ -8,7 +8,7 @@
     - [Presentation Layer](#presentation-layer)  
     - [Business Logic Layer](#business-logic-layer)  
     - [Data Access Layer](#data-access-layer)  
-3. [Business Logic](#business-logic)
+3. [Business Logic Layers](#business-logic-layers)
     - [BaseModel](#basemodel)
     - [User Class](#user-class)
     - [Place Class](#place-class)
@@ -96,7 +96,7 @@ Conclusion :
 
 - By keeping data operations separate, we ensure that the Business Logic Layer remains independent of the underlying data source, allowing for easy modifications (e.g., changing the database technology).
 
-## Business Logic
+## Business Logic Layers
 
 ### Detailed Class Diagram
 
@@ -260,3 +260,8 @@ This section includes sequence diagrams for selected API calls, providing explan
 This technical document provides a comprehensive overview of the HBnB project's architecture and design. It serves as a crucial reference for the implementation phase, ensuring that all team members have a clear understanding of the system's structure and functionality.
 
 As the project progresses, this document may be updated to reflect any changes or refinements in the design. All team members are encouraged to refer to this document regularly and contribute to its maintenance and improvement.
+
+## Authors
+
+[Gaetan Pineiro](https://github.com/THO-Gaetan)\
+[Aurelien Goaoc](https://github.com/Aurelien292)
