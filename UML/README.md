@@ -183,8 +183,8 @@ This section includes sequence diagrams for selected API calls, providing explan
 
 #### Sequence of Interactions :
 1. Client sends a POST request with user details (name, email, password).
-2. API Controller validates the input data and sends it to the Facade Layer.
-3. Facade Layer calls the User Service, which checks if:
+2. API Controller validates the input data and sends it to the Business Logic.
+3. Business Logic calls the User Service, which checks if:
     - The email is unique.
     - The password meets security standards.
 4. User Service hashes the password before saving the user in the Data Access Layer.
@@ -197,16 +197,16 @@ This section includes sequence diagrams for selected API calls, providing explan
 ![alt text](2-place_creation.png)
 
 #### API Call :
-- POST /api/places
+- POST /api/Create_Place
 
 #### Sequence of Interactions :
 
 1. Client sends a POST request with the place details (name, location, price, owner ID).
-2. API Controller validates the request data and sends it to the Facade Layer.
-3. Facade Layer calls the Place Service, which verifies business logic (e.g., valid owner ID, required fields).
+2. API Controller validates the request data and sends it to the Business Logic.
+3. Business Logic calls the Place Service, which verifies business logic (e.g., valid owner ID, required fields).
 4. Place Service sends a request to the Data Access Layer to store the new place in the database.
 5. Database inserts the new place record and returns a success response.
-6. Place Service constructs a response and sends it back through the Facade Layer to the API Controller.
+6. Place Service constructs a response and sends it back through the Business Logic to the API Controller.
 7. API Controller returns a 201 Created response to the client with the new place’s details.
 
 ### Review Submission
@@ -214,18 +214,18 @@ This section includes sequence diagrams for selected API calls, providing explan
 ![alt text](2-review_submission.png)
 
 #### API Call :
-- POST /api/reviews
+- POST /api/Reviews
 
 #### Sequence of Interactions :
 
 1. Client sends a POST request with the review details (user ID, place ID, rating, comment).
-2. API Controller validates the request and sends it to the Facade Layer.
-3. Facade Layer calls the Review Service, which checks:
+2. API Controller validates the request and sends it to the Business Logic.
+3. Business Logic calls the Review Service, which checks:
     - If the user has stayed at the place before allowing a review.
     - If the rating is within the valid range (e.g., 1-5 stars).
 4. Review Service sends the validated review to the Data Access Layer to store it in the database.
 5. Database inserts the review and returns a success confirmation.
-6. Review Service constructs a response and forwards it back through the Facade Layer to the API Controller.
+6. Review Service constructs a response and forwards it back through the Business Logic to the API Controller.
 7. API Controller returns a 201 Created response to the client.
 
 ### Fetching Places List
@@ -233,16 +233,16 @@ This section includes sequence diagrams for selected API calls, providing explan
 ![alt text](2-Fetching_places_list.png)
 
 #### API Call :
-- GET /api/places
+- GET /api/search
 
 #### Sequence of Interactions :
 
 1. Client (Web/App/API Consumer) sends a GET request to fetch a list of places.
-2. API Controller receives the request and send it to the Facade Layer.
-3. Facade Layer interacts with the Place Service, which retrieves data from the Data Access Layer (Database).
+2. API Controller receives the request and send it to the Business Logic.
+3. Business Logic interacts with the Place Service, which retrieves data from the Data Access Layer (Database).
 4. Database returns the list of places to the Place Service.
-5. Place Service sends the formatted data back to the Facade Layer.
-6. Facade Layer forwards the response to the API Controller.
+5. Place Service sends the formatted data back to the Business Logic.
+6. Business Logic forwards the response to the API Controller.
 7. API Controller returns the list of places as a JSON response to the client.
 
 #### Sequence diagrams use arrows to represent messages between objects :
