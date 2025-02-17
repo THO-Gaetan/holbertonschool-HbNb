@@ -169,27 +169,12 @@ This section presents the detailed class diagram for the Business Logic Layer, e
 
 ## API Interaction Flow
 
-
-### User Registration
-
-![alt text](2-user_registration.png)
-
-### Place Creation
-
-![alt text](2-place_creation.png)
-
-### Review Submission
-
-![alt text](2-review_submission.png)
-
-### Fetching Places List
-
-![alt text](2-Fetching_places_list.png)
-
 ### Explanation
 This section includes sequence diagrams for selected API calls, providing explanations of the interactions and data flow between components.
 
 ### User Registration
+
+![alt text](2-user_registration.png)
 
 #### API Call :
 - POST /api/users/register
@@ -207,6 +192,8 @@ This section includes sequence diagrams for selected API calls, providing explan
 
 ### Place Creation
 
+![alt text](2-place_creation.png)
+
 #### API Call :
 - POST /api/places
 
@@ -221,6 +208,8 @@ This section includes sequence diagrams for selected API calls, providing explan
 7. API Controller returns a 201 Created response to the client with the new place’s details.
 
 ### Review Submission
+
+![alt text](2-review_submission.png)
 
 #### API Call :
 - POST /api/reviews
@@ -238,6 +227,8 @@ This section includes sequence diagrams for selected API calls, providing explan
 7. API Controller returns a 201 Created response to the client.
 
 ### Fetching Places List
+
+![alt text](2-Fetching_places_list.png)
 
 #### API Call :
 - GET /api/places
