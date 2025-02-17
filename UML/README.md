@@ -265,5 +265,5 @@ As the project progresses, this document may be updated to reflect any changes o
 
 ## Authors
 
-[Gaetan Pineiro](https://github.com/THO-Gaetan)\
-[Aurelien Goaoc](https://github.com/Aurelien292)
+Creation of the Class diagram and README managed by : [Gaetan Pineiro](https://github.com/THO-Gaetan)\
+Creation of the Package diagram and the Sequence diagrams managed by : [Aurelien Goaoc](https://github.com/Aurelien292)
