@@ -214,7 +214,7 @@ This section includes sequence diagrams for selected API calls, providing explan
 ![alt text](2-review_submission.png)
 
 #### API Call :
-- POST /api/Reviews
+- POST /api/Review
 
 #### Sequence of Interactions :
 
