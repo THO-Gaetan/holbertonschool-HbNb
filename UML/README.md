@@ -203,10 +203,10 @@ This section includes sequence diagrams for selected API calls, providing explan
 
 1. Client sends a POST request with the place details (name, location, price, owner ID).
 2. API Controller validates the request data and sends it to the Business Logic.
-3. Business Logic calls the Place Service, which verifies business logic (e.g., valid owner ID, required fields).
-4. Place Service sends a request to the Data Access Layer to store the new place in the database.
+3. Business Logic calls the Create_Place Service, which verifies business logic (e.g., valid owner ID, required fields).
+4. Create_Place Service sends a request to the Data Access Layer to store the new place in the database.
 5. Database inserts the new place record and returns a success response.
-6. Place Service constructs a response and sends it back through the Business Logic to the API Controller.
+6. Create_Place Service constructs a response and sends it back through the Business Logic to the API Controller.
 7. API Controller returns a 201 Created response to the client with the new place’s details.
 
 ### Review Submission
