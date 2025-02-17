@@ -19,6 +19,8 @@
     - [Place Creation](#place-creation)
     - [Review Submission](#review-submission)
     - [Fetching Places List](#fetching-places-list)
+5. [Conclusion](#conclusion)
+6. [Authors](#authors)
 
 ## Introduction
 
