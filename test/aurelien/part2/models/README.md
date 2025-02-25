@@ -2,7 +2,7 @@
 
 Ce projet permet de gérer des utilisateurs dans un système. Il contient plusieurs classes pour gérer les informations des utilisateurs (création, mise à jour, suppression, etc.) et la persistance de ces informations dans un fichier JSON.
 Fonctionnalités
-1. Classe BaseModel
+## 1. Classe BaseModel
 
 Cette classe sert de modèle de base pour tous les objets qui nécessitent un identifiant unique et des timestamps. Elle permet de gérer les informations de date de création et de mise à jour des objets.
 Attributs :
@@ -11,12 +11,12 @@ Attributs :
     created_at : Date de création (timestamp).
     updated_at : Date de dernière mise à jour (timestamp).
 
-Méthodes :
+### Méthodes :
 
     save() : Met à jour le champ updated_at.
     to_dict() : Retourne un dictionnaire des attributs de l'objet avec les timestamps formatés.
 
-2. Classe User
+## 2. Classe User
 
 La classe User permet de gérer les informations des utilisateurs, y compris l'enregistrement de leurs emails et mot de passe haché.
 Attributs :
@@ -30,7 +30,7 @@ Attributs :
     __password : Mot de passe de l'utilisateur, haché pour la sécurité.
     created_at : Date de création de l'utilisateur (timestamp).
 
-Méthodes :
+### Méthodes :
 
     __init__() : Initialise un utilisateur avec un prénom, un nom, un mot de passe et un email.
     hash_password() : Hache un mot de passe en utilisant la bibliothèque bcrypt.
@@ -39,7 +39,7 @@ Méthodes :
     user_update() : Met à jour les informations de l'utilisateur dans le fichier JSON.
     delete_user() : Supprime l'utilisateur du fichier JSON ainsi que son email associé.
 
-3. Classe DataManager
+## 3. Classe DataManager
 
 La classe DataManager gère la persistance des données dans un fichier JSON. Elle permet de sauvegarder, récupérer, mettre à jour et supprimer des éléments dans le fichier.
 Attributs :
@@ -47,7 +47,7 @@ Attributs :
     file_name : Nom du fichier JSON utilisé pour stocker les données (par défaut "data.json").
     data : Contient les données chargées du fichier JSON.
 
-Méthodes :
+### Méthodes :
 
     __init__() : Charge les données du fichier JSON dans self.data ou crée un dictionnaire vide si le fichier n'existe pas.
     save(category, item, item_id) : Sauvegarde un élément dans une catégorie spécifique du fichier JSON.
