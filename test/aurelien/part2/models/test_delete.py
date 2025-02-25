@@ -20,7 +20,7 @@ def delete_user_by_email(email_to_delete):
             user_id_to_delete = user_id
             break
 
-    # Si l'ID n'est trouvé, cela signifie que l'utilisateur n'existe pas
+    # Si l'ID n'est pas trouvé, cela signifie que l'utilisateur n'existe pas
     if user_id_to_delete is None:
         print(f"Aucun utilisateur trouvé avec l'email : {email_to_delete}")
         return
