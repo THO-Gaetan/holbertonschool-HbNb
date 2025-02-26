@@ -1,8 +1,10 @@
 #!/usr/bin/python3
+reviews = {}
+
 
 from app.models.basemodel import BaseModel
 
-class review(BaseModel):
+class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         super().__init__()
         self.text = text
@@ -10,4 +12,8 @@ class review(BaseModel):
         self.place = place
         self.user = user
 
-        self.place.add_review(self)
+def create_review(text, rating, user, place):
+    review = Review(text, rating, user, place)
+    reviews[review.id] = review
+    place.add_review(review)
+    return review
