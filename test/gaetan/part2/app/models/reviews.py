@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 reviews = {}
 
-
+from app.models.users import User
+from app.models.places import Place
 from app.models.basemodel import BaseModel
 
 class Review(BaseModel):
