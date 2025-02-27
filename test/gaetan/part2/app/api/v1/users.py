@@ -5,7 +5,8 @@ api = Namespace('users', description='User operations')
 
 # Define the user model for input validation and documentation
 user_model = api.model('User', {
-    'name': fields.String(required=True, description='name of the user'),
+    'last_name': fields.String(required=True, description='Last name of the user'),
+    'first_name': fields.String(required=True, description='First name of the user'),
     'email': fields.String(required=True, description='Email of the user')
 })
 
@@ -26,7 +27,15 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
-        return {'id': new_user.id, 'name': new_user.name, 'email': new_user.email}, 201
+        return {'id': new_user.id, 'last_name': new_user.last_name, 'first_name': new_user.first_name, 'email': new_user.email}, 201
+
+@api.route('/')
+class UserRetrieve(Resource):
+    @api.response(200, 'List of users retrieved successfully')
+    def get(self):
+        """Retrieve a list of all users"""
+        users = facade.get_all_user()
+        return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in users], 200
 
 
 @api.route('/<user_id>')
