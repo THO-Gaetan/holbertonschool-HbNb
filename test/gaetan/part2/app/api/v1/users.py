@@ -11,7 +11,6 @@ user_model = api.model('User', {
     'password': fields.String(required=True, description='Password of the user')
 })
 
-
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)

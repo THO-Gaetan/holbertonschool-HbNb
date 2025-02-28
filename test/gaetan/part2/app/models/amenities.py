@@ -7,7 +7,12 @@ class Amenitie(BaseModel):
         super().__init__()
         self.name = name
 
-def create_amenity(name):
-    amenity = Amenitie(name)
-    amenities[amenity.id] = amenity
-    return amenity
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, value: str):
+        if not value:
+            raise ValueError("Name cannot be empty")
+        self._name = value
