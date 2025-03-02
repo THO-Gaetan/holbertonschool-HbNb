@@ -1,4 +1,7 @@
+![alt text](<HBNB PART2.PNG>)
+
 # Holberton School HBnB - Part 2
+
 
 This project contains the implementation of a simple web application for managing users, places, reviews, and amenities. The application is built using Flask and Flask-RESTx for creating RESTful APIs. The project includes models, services, and API endpoints for managing the different entities.
 
