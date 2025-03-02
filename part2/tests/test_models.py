@@ -1,40 +1,26 @@
 import unittest
-from datetime import datetime
-from app.models import Review, Place, User, BaseModel, Amenitie
+from app import create_app
 
-# Import the create functions from their respective modules
-from app.models.places import create_place
-from app.models.reviews import create_review
-from app.models.amenities import create_amenity
+class TestUserEndpoints(unittest.TestCase):
 
-class TestModels(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app()
+        self.client = self.app.test_client()
 
-    def test_methods(self):
-        # Test User creation
-        user = User("John Doe", "test@example.com")
-        self.assertEqual(user.email, "test@example.com", "User email doesn't match")
-        print("User creation test passed")
+    def test_create_user(self):
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane.doe@example.com",
+            "password": "goodpassword"
+        })
+        self.assertEqual(response.status_code, 201)
 
-        # Test Place creation and relationship with User
-        place = create_place("Cozy Cabin", "A beautiful cabin in the woods", 100.0, 40.7128, -74.0060, user)
-        self.assertEqual(place.owner, user, "Place owner doesn't match")
-        self.assertIn(place, user.place, "Place not in user's places")
-        print("Place creation and User relationship test passed")
-
-        # Test Review creation and relationship with Place and User
-        review = create_review("Great place!", 5, user, place)
-        self.assertIn(review, place.reviews, "Review not in place's reviews")
-        self.assertEqual(review.user, user, "Review user doesn't match")
-        self.assertEqual(review.place, place, "Review place doesn't match")
-        print("Review creation and relationships test passed")
-
-        # Test Amenity creation and relationship with Place
-        amenity = create_amenity("Wi-Fi")
-        place.add_amenity(amenity)
-        self.assertIn(amenity, place.amenities, "Amenity not in place's amenities")
-        print("Amenity creation and Place relationship test passed")
-
-        print("All tests passed successfully!")
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_create_user_invalid_data(self):
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "",
+            "last_name": "",
+            "email": "invalid-email",
+            "password": "desd"
+        })
+        self.assertEqual(response.status_code, 400)
