@@ -44,10 +44,13 @@ class InMemoryRepository(Repository):
         obj = self.get(obj_id)
         if obj:
             obj.update(data)
+            return obj
+        return None
 
     def delete(self, obj_id):
         if obj_id in self._storage:
             del self._storage[obj_id]
+        return None
 
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
