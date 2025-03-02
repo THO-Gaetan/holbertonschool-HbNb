@@ -36,8 +36,6 @@ class UserList(Resource):
     def get(self):
         """Retrieve a list of all users"""
         users = facade.get_all_user()
-        if not users:
-            return {'error': 'User not found'}, 404
         return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in users], 200
 
 

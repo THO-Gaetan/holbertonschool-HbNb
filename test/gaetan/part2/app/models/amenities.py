@@ -16,3 +16,15 @@ class Amenitie(BaseModel):
         if not value:
             raise ValueError("Name cannot be empty")
         self._name = value
+
+    def to_dict(self):
+        """Convert the amenity object to a dictionary."""
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+def create_amenity(name):
+    amenity = Amenitie(name)
+    amenities[amenity.id] = amenity
+    return amenity

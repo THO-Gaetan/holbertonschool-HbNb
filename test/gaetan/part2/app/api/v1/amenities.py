@@ -28,8 +28,6 @@ class AmenityList(Resource):
         """Retrieve a list of all amenities"""
         # Placeholder for logic to return a list of all amenities
         amenities = facade.get_all_amenities()
-        if not amenities:
-            return {'error': 'Amenity not found'}, 404
         return [{'id': amenity.id, 'amenity': amenity.name} for amenity in amenities], 200
 
 @api.route('/<amenity_id>')

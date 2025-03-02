@@ -128,7 +128,3 @@ class User(BaseModel):
             return f"Erreur : L'email associé à l'utilisateur avec l'ID {self.user_id} n'a pas été trouvé."
 
         return f"L'utilisateur avec l'ID {self.user_id} a été supprimé avec succès."
-
-    def __str__(self):
-        """Retourne une représentation en chaîne de caractères de l'utilisateur."""
-        return f"User(id={self.id}, first_name={self.first_name}, last_name={self.last_name}, email={self.email}, is_created={self.is_created})"
