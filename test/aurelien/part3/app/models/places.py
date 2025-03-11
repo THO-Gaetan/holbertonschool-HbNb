@@ -5,8 +5,9 @@ from app.models.basemodel import BaseModel
 from app.models.users import User
 from app.models.amenities import Amenitie
 
+
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner, owner_id=None):
         super().__init__()
         self.title = title
         self.description = description
@@ -14,6 +15,7 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+        self.owner_id = owner_id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
@@ -103,6 +105,18 @@ class Place(BaseModel):
             'reviews': [{'id': review.id, 'text': review.text, 'rating': review.rating} for review in self.reviews],
             'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in self.amenities]
         }
+        
+    @property
+    def owner_id(self):
+        """Retourne l'ID du propriétaire du lieu"""
+        return self._owner_id
+
+    @owner_id.setter
+    def owner_id(self, value):
+        """Définir l'ID du propriétaire"""
+        if value is None:
+            raise ValueError("Owner ID cannot be None")
+        self._owner_id = value
 
 def create_place(title, description, price, latitude, longitude, owner):
     place = Place(title, description, price, latitude, longitude, owner)

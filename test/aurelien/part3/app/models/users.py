@@ -130,3 +130,7 @@ class User(BaseModel):
             return f"Erreur : L'email associé à l'utilisateur avec l'ID {self.user_id} n'a pas été trouvé."
 
         return f"L'utilisateur avec l'ID {self.user_id} a été supprimé avec succès."
+    
+    def verify_password(self, password: str) -> bool:
+        """Vérifie si le mot de passe fourni correspond au mot de passe haché."""
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))

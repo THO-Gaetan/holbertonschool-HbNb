@@ -17,12 +17,6 @@ user_model = api.model('User', {
     'password': fields.String(required=True, description='Password of the user')
 })
 
-# Define the login model for input validation
-login_model = api.model('Login', {
-    'email': fields.String(required=True, description='Email of the user'),
-    'password': fields.String(required=True, description='Password of the user')
-})
-
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
@@ -50,40 +44,6 @@ class UserList(Resource):
         users = facade.get_all_user()
         return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in users], 200
     
-@api.route('/login')   
-class UserLogin(Resource):
-    @api.response(200, 'Login successful')
-    @api.response(401, 'Invalid credentials')
-    @api.response(400, 'Missing username or password')
-    @api.expect(login_model, validate=True)
-    def post(self):
-        
-        
-        """Login and return a JWT token"""
-        email = request.json.get('email', None)
-        password = request.json.get('password', None)
-        
-        if not email or not password:
-            return {"msg": "Missing username or password"}, 400
-
-        # Récupérer tous les utilisateurs
-        users = facade.get_all_user()
-
-        # Vérifier si l'email existe dans la liste des utilisateurs
-        user = next((u for u in users if u.email == email), None)
-
-        if not user:
-            return {"msg": "Invalid credentials"}, 401
-
-        # Vérifier le mot de passe haché avec bcrypt
-        if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            # Si le mot de passe est correct, créer un token JWT
-            access_token = create_access_token(identity=user.id)
-            return {"access_token": access_token}, 200
-        else:
-            return {"msg": "Invalid credentials"}, 401
-
-
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
