@@ -1,5 +1,5 @@
-#!/user/bin/python3
-import bcrypt
+#!/usr/bin/python3
+from app import bcrypt
 import re
 from .basemodel import BaseModel
 from .data_management import DataManager
@@ -39,8 +39,11 @@ class User(BaseModel):
         """
         if not value or len(value) < 8:
             raise ValueError("Le mot de passe doit avoir au moins 8 caractères.")
-        salt = bcrypt.gensalt()  # Génération du sel pour bcrypt
-        self._password = bcrypt.hashpw(value.encode('utf-8'), salt).decode('utf-8')
+        self._password = bcrypt.generate_password_hash(value).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self._password, password)
 
     @property
     def first_name(self) -> str:
