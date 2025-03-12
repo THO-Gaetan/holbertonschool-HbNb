@@ -1,16 +1,24 @@
 #!/usr/bin/python3
-from app import bcrypt
+from app.extensions import bcrypt
+from app.extensions import db
 import re
 from .basemodel import BaseModel
 from .data_management import DataManager
 
-class User(BaseModel):
+class User(db.Model, BaseModel):
     """
     Classe représentant un utilisateur dans l'application.
     Hérite de BaseModel pour les fonctionnalités communes.
     """
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    _password = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
-    def __init__(self, first_name: str, last_name: str, email: str, password: str):
+    def __init__(self, first_name: str, last_name: str, email: str, password: str, is_admin: bool = False):
         """
         Initialise un nouvel utilisateur.
 
@@ -25,14 +33,21 @@ class User(BaseModel):
         self.email = email
         self.password = password  # Utilise le setter pour valider et stocker le mot de passe
         self.created_at = str(self.created_at)  # Date de création générée automatiquement par BaseModel
+        self.is_admin = is_admin # Attribut indiquant si l'utilisateur est un administrateur
 
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+    def verify_password(self, password: str) -> bool:
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self._password, password)
     @property
     def password(self) -> str:
         """Getter pour le mot de passe de l'utilisateur."""
         return self._password
 
     @password.setter
-    def password(self, value: str):
+    def hash_password(self, value: str):
         """
         Setter pour le mot de passe de l'utilisateur.
         Hache le mot de passe en utilisant bcrypt.
@@ -40,10 +55,6 @@ class User(BaseModel):
         if not value or len(value) < 8:
             raise ValueError("Le mot de passe doit avoir au moins 8 caractères.")
         self._password = bcrypt.generate_password_hash(value).decode('utf-8')
-
-    def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self._password, password)
 
     @property
     def first_name(self) -> str:
@@ -97,7 +108,8 @@ class User(BaseModel):
             "last_name": self.last_name,
             "email": self.email,
             "password": self.password,
-            "created_at": self.created_at
+            "created_at": self.created_at,
+            "is_admin": self.is_admin
         }
 
     def save_to_file(self) -> str:
