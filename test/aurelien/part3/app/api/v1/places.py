@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+
 api = Namespace('places', description='Place operations')
 
 # Define the models for related entities
@@ -71,9 +72,16 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
         place_data = api.payload
+        current_user = get_jwt_identity()
+        user_id = current_user['id']
+        place = facade.get_place(place_id)
+        
+        if place.owner_id != user_id:
+            return {'error': 'Unauthorized to modify this place'}, 403
 
         try:
             updated_place = facade.update_place(place_id, place_data)
