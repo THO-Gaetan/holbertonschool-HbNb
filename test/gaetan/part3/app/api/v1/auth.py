@@ -13,6 +13,8 @@ login_model = api.model('Login', {
 @api.route('/login')
 class Login(Resource):
     @api.expect(login_model)
+    @api.response(200, 'Login successful')  # Success response with code 200
+    @api.response(401, 'Invalid credentials')  # Error response with code 401
     def post(self):
         """Authenticate user and return a JWT token"""
         credentials = api.payload  # Get the email and password from the request payload
