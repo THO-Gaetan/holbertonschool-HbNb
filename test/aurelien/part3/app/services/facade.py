@@ -7,6 +7,7 @@ class HBnBFacade:
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -25,8 +26,8 @@ class HBnBFacade:
     def update_user(self, user_id, user_data):
         return self.user_repo.update(user_id, user_data)
 
-    def create_place(self, place_data):
-        user = self.user_repo.get(place_data['owner_id'])
+    def create_place(self, place_data,owner_id):
+        user = self.user_repo.get(owner_id)
         if not user:
             raise ValueError("User not found")
         place = Place(
@@ -36,7 +37,7 @@ class HBnBFacade:
             latitude=place_data['latitude'],
             longitude=place_data['longitude'],
             owner=user
-        )
+            )
         self.place_repo.add(place)
         return place
 
@@ -70,15 +71,26 @@ class HBnBFacade:
         # Update an amenity and return the updated object or None if not found
         return self.amenity_repo.update(amenity_id, amenity_data)
     
-    def create_review(self, review_data):
+    def create_review(self, review_data, user_id):
+        # Recherche d'abord un avis avec l'user_id
+        existing_review = self.review_repo.get_by_attribute('user_id', user_id)
+
+# Puis vérifiez manuellement si le place_id correspond
+        if existing_review and existing_review.place.id == review_data['place_id']:
+            return existing_review
         user = self.user_repo.get(review_data['user_id'])
         place = self.place_repo.get(review_data['place_id'])
         if not user or not place:
             raise ValueError("User or Place not found")
-        review = Review(review_data['text'], review_data['rating'], user, place)
+        review = Review(review_data['text'], review_data['rating'], user, place, user_id)
         self.review_repo.add(review)
         place.add_review(review)
         return review
+    
+    def get_review_by_user_and_place(self, user_id, place_id):
+    # Recherche un avis existant avec l'ID de l'utilisateur et de l'endroit.
+        return next((review for review in self.review_repo.get_all() 
+                 if review.user.id == user_id and review.place.id == place_id), None)
 
     def get_review(self, review_id):
         # Placeholder for logic to retrieve a review by ID

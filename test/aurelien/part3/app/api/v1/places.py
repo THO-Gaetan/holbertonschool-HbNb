@@ -26,6 +26,7 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
+    
 })
 place_update_model = api.model('PlaceUpdate', {
     'title': fields.String(required=True, description='Title of the place'),
@@ -41,12 +42,12 @@ class PlaceList(Resource):
     @jwt_required()
     def post(self):
         """Register a new place"""
-        
-        current_user_id = get_jwt_identity()
         place_data = api.payload
+        current_user_id = get_jwt_identity()
+        
 
         try:
-            new_place = facade.create_place(place_data, owner_id=current_user_id)
+            new_place = facade.create_place(place_data, current_user_id['id'])
             return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner.id}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -80,7 +81,7 @@ class PlaceResource(Resource):
         user_id = current_user['id']
         place = facade.get_place(place_id)
         
-        if place.owner_id != user_id:
+        if place.owner is None or place.owner.id != user_id:
             return {'error': 'Unauthorized to modify this place'}, 403
 
         try:

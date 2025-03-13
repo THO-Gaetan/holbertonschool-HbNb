@@ -7,7 +7,7 @@ from app.models.amenities import Amenitie
 
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner, owner_id=None):
+    def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
         self.title = title
         self.description = description
@@ -15,9 +15,9 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
-        self.owner_id = owner_id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
+        self.owner_id = owner.id
 
     @property
     def title(self):

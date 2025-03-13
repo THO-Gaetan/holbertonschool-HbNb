@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields, Api
 from app.services import facade
 
 from app.models import User
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request
 import bcrypt
 
@@ -44,6 +44,7 @@ class UserList(Resource):
         users = facade.get_all_user()
         return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in users], 200
     
+    
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
@@ -59,10 +60,23 @@ class UserResource(Resource):
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
+    
     def put(self, user_id):
         """update a user's information"""
         user_data = api.payload
-
+        
+        current_user_id = get_jwt_identity()
+        if current_user_id['id'] != user_id:
+            return {'error': 'You are not authorized to update this user'}, 403
+        
+        if 'password' in user_data:
+            del user_data['password']
+            print('\033[91mUser cannot update password\033[0m')
+        if 'email' in user_data:
+            del user_data['email']
+            print('\033[91mUser cannot update email\033[0m')
+        
         try:
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
