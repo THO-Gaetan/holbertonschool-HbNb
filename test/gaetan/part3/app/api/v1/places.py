@@ -44,8 +44,6 @@ class PlaceList(Resource):
         place_data = api.payload
 
         try:
-            if place_data.owner_id != current_user:
-                return {'error': 'Unauthorized action'}, 403
             new_place = facade.create_place(place_data)
             return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner.id}, 201
         except ValueError as e:
@@ -72,10 +70,14 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
         place_data = api.payload
-
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+        if place.owner_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
         try:
             updated_place = facade.update_place(place_id, place_data)
             if not updated_place:

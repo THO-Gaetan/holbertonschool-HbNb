@@ -105,3 +105,6 @@ class HBnBFacade:
         self.review_repo.delete(review_id)
         review.place.reviews.remove(review)
         return review
+    
+    def get_review_count_by_user_place(self, user_id, place_id):
+        return len([review for review in self.review_repo.get_all() if review.user.id == user_id and review.place.id == place_id])
