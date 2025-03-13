@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('reviews', description='Review operations')
 
@@ -20,9 +21,16 @@ class ReviewList(Resource):
     @api.expect(review_model)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new review"""
+        current_user = get_jwt_identity()
         review_data = api.payload
+        review_count = facade.get_review_count_by_user_place(review_data['user_id'], review_data['place_id'])
+        if review_data['user_id'] == current_user:
+            return {'error': 'You cannot review your own place.'}, 400
+        if review_count > 0:
+            return {'error': 'You can only review a place once.'}, 400
 
         try:
             new_review = facade.create_review(review_data)
@@ -51,9 +59,13 @@ class ReviewResource(Resource):
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, review_id):
         """Update a review's information"""
+        current_user = get_jwt_identity()
         review_data = api.payload
+        if review_data['user_id'] != current_user:
+            return {'error': 'Unauthorized action.'}, 403
 
         try:
             review = facade.update_review(review_id, review_data)
@@ -65,9 +77,14 @@ class ReviewResource(Resource):
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
+    @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
+        current_user = get_jwt_identity()
         review = facade.delete_review(review_id)
+        if review.user.id != current_user:
+            return {'error': 'Unauthorized action.'}, 403
+
         if review is None:
             return {'error': 'Review not found'}, 404
         return {'message': 'Review deleted successfully'}, 200

@@ -1,12 +1,12 @@
 from app.models import User, Place, Amenitie, Review, BaseModel
-from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository(User)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Amenitie)
+        self.amenity_repo = SQLAlchemyRepository(Review)
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -105,3 +105,6 @@ class HBnBFacade:
         self.review_repo.delete(review_id)
         review.place.reviews.remove(review)
         return review
+    
+    def get_review_count_by_user_place(self, user_id, place_id):
+        return len([review for review in self.review_repo.get_all() if review.user.id == user_id and review.place.id == place_id])
