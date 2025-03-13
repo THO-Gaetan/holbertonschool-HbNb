@@ -6,12 +6,14 @@ from app.models.users import User
 from app.models.places import Place
 
 class Review(BaseModel):
-    def __init__(self, text, rating, user, place):
+    def __init__(self, text, rating, user, place, user_id):
         super().__init__()
         self.text = text
         self.rating = rating
         self.user = user
         self.place = place
+        self.user_id = user_id
+        
 
     @property
     def text(self):
