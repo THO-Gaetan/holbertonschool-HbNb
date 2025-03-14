@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace('amenities', description='Amenity operations')
 
@@ -8,20 +9,26 @@ amenity_model = api.model('Amenity', {
     'name': fields.String(required=True, description='Name of the amenity')
 })
 
-@api.route('/')
-class AmenityList(Resource):
-    @api.expect(amenity_model, validate=True)
+@api.route('/amenities/')
+class AdminAmenityCreate(Resource):
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privileges required')
+    @jwt_required()
     def post(self):
-        """Register a new amenity"""
-        # Placeholder for the logic to register a new amenity
+        """Admin requests to register a new amenity"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         amenity_data = api.payload
+
         try:
             new_amenity = facade.create_amenity(amenity_data)
             return {'id': new_amenity.id, 'amenity': new_amenity.name}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
+
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
@@ -41,14 +48,20 @@ class AmenityResource(Resource):
         if not amenities:
             return {'error': 'Amenity not found'}, 404
         return {'id': amenities.id, 'amenity': amenities.name}, 200
-
-    @api.expect(amenity_model, validate=True)
+        
+@api.route('/amenities/<amenity_id>')
+class AdminAmenityModify(Resource):
     @api.response(200, 'Amenity updated successfully')
-    @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privileges required')
+    @api.response(404, 'Amenity not found')
+    @jwt_required()
     def put(self, amenity_id):
-        """Update an amenity's information"""
-        # Placeholder for the logic to update an amenity by ID
+        """Admin requests to update an amenity"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         amenities_data = api.payload
 
         try:
