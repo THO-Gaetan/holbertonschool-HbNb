@@ -25,7 +25,7 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     @jwt_required()
     def post(self):
-        """Register a new review"""
+        """Register a new review **JWT CLIENT REQUIERED** """
         review_data = api.payload
         
         current_user_id = get_jwt_identity()
@@ -71,15 +71,19 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     @jwt_required()
     def put(self, review_id):
-        """Update a review's information"""
+        """Update a review's information **JWT CLIENT REQUIERED** et **ADMIN ONLY ** """
         
         current_user_id = get_jwt_identity()
+        
+        is_admin = current_user_id.get('is_admin', False)
         
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
-        if review.user.id != current_user_id['id']:
-            return {'error': 'Unauthorized to modify this review'}, 403
+        
+        if not is_admin:
+            if review.user.id != current_user_id['id']:
+                return {'error': 'Unauthorized to modify this review'}, 403
         
         review_data = api.payload
 
@@ -96,16 +100,20 @@ class ReviewResource(Resource):
     @jwt_required()
     
     def delete(self, review_id):
-        """Delete a review"""
+        """Delete a review **JWT CLIENT REQUIERED** et **ADMIN ONLY ** """
         
         current_user_id = get_jwt_identity()
-    
+        
+        is_admin = current_user_id.get('is_admin', False)
         review = facade.delete_review(review_id)
+        
         if review is None:
             return {'error': 'Review not found'}, 404
-        if review.user.id != current_user_id['id']:
-            return {'error': 'Unauthorized delete this review'}, 403
-        return {'message': 'Review deleted successfully'}, 200
+        
+        if not is_admin:
+            if review.user.id != current_user_id['id']:
+                return {'error': 'Unauthorized delete this review'}, 403
+            return {'message': 'Review deleted successfully'}, 200
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):

@@ -23,20 +23,29 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
-        """Register a new user"""
+        """Register a new user **ADMIN ONLY **"""
+        
+        current_user_id = get_jwt_identity()
         user_data = api.payload
+        
+        is_admin = current_user_id.get('is_admin', False)
+        
+        if not is_admin:
+            print('\033[91mUser cannot create a new user\033[0m')
+        else:
 
-        try:
+            try:
             # Simulate email uniqueness check (to be replaced by real validation with persistence)
-            existing_user = facade.get_user_by_email(user_data['email'])
-            if existing_user:
-                return {'error': 'Email already registered'}, 400
+                existing_user = facade.get_user_by_email(user_data['email'])
+                if existing_user:
+                    return {'error': 'Email already registered'}, 400
 
-            new_user = facade.create_user(user_data)
-            return {'id': new_user.id, 'last_name': new_user.last_name, 'first_name': new_user.first_name, 'email': new_user.email,}, 201
-        except ValueError as e:
-            return {'error': str(e)}, 400
+                new_user = facade.create_user(user_data)
+                return {'id': new_user.id, 'last_name': new_user.last_name, 'first_name': new_user.first_name, 'email': new_user.email,}, 201
+            except ValueError as e:
+                return {'error': str(e)}, 400
 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
@@ -63,19 +72,23 @@ class UserResource(Resource):
     @jwt_required()
     
     def put(self, user_id):
-        """update a user's information"""
+        """update a user's information **JWT CLIENT REQUIERED** et **ADMIN ONLY ** """
         user_data = api.payload
         
         current_user_id = get_jwt_identity()
-        if current_user_id['id'] != user_id:
+        
+        is_admin = current_user_id.get('is_admin', False)
+        
+        if current_user_id['id'] != user_id and not is_admin:
             return {'error': 'You are not authorized to update this user'}, 403
         
-        if 'password' in user_data:
-            del user_data['password']
-            print('\033[91mUser cannot update password\033[0m')
-        if 'email' in user_data:
-            del user_data['email']
-            print('\033[91mUser cannot update email\033[0m')
+        if not is_admin:
+            if 'password' in user_data:
+                del user_data['password']
+                print('\033[91mUser cannot update password\033[0m')
+            if 'email' in user_data:
+                del user_data['email']
+                print('\033[91mUser cannot update email\033[0m')
         
         try:
             updated_user = facade.update_user(user_id, user_data)

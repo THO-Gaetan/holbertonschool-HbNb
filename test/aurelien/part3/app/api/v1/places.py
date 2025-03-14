@@ -41,7 +41,7 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     @jwt_required()
     def post(self):
-        """Register a new place"""
+        """Register a new place **JWT CLIENT REQUIERED** """
         place_data = api.payload
         current_user_id = get_jwt_identity()
         
@@ -75,14 +75,19 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     @jwt_required()
     def put(self, place_id):
-        """Update a place's information"""
+        """Update a place's information **JWT CLIENT REQUIERED** et **ADMIN ONLY ** """
         place_data = api.payload
         current_user = get_jwt_identity()
         user_id = current_user['id']
+        
+        is_admin = current_user.get('is_admin', False)
+        
         place = facade.get_place(place_id)
         
-        if place.owner is None or place.owner.id != user_id:
-            return {'error': 'Unauthorized to modify this place'}, 403
+        if not is_admin:
+            
+            if place.owner is None or place.owner.id != user_id:
+                return {'error': 'Unauthorized to modify this place'}, 403
 
         try:
             updated_place = facade.update_place(place_id, place_data)

@@ -8,9 +8,9 @@ testing
 online
 default
 '''
-config_name = 'development'
+config_name = 'default'
 
 app = create_app(config_name=config_name)
 
 if __name__ == "__main__":
-    app.run(debug=config_name== 'development')
+    app.run(debug=config_name== 'default')
