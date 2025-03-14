@@ -66,18 +66,27 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}}, 200
 
-    @api.expect(place_update_model)
+@api.route('/places/<place_id>')
+class AdminPlaceModify(Resource):
     @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
     @jwt_required()
     def put(self, place_id):
-        """Update a place's information"""
-        place_data = api.payload
+        """Admin requests to update a place's information"""
         current_user = get_jwt_identity()
+
+        # Set is_admin default to False if not exists
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+
         place = facade.get_place(place_id)
-        if place.owner_id != current_user:
+        if not is_admin and place.owner_id != user_id:
             return {'error': 'Unauthorized action'}, 403
+
+        place_data = api.payload
+
         try:
             updated_place = facade.update_place(place_id, place_data)
             if not updated_place:

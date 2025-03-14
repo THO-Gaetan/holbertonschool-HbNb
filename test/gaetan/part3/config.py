@@ -12,16 +12,20 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///dev.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENVIRONMENT = 'development'
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite:///test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///testing.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENVIRONMENT = 'testing'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///prod.db'
+    PRODUCTION = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///production.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENVIRONMENT = 'production'
 
 config = {
