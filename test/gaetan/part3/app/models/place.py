@@ -2,21 +2,32 @@
 places = {}
 
 from app.models.base_model import BaseModel
-from app.models.users import User
-from app.models.amenities import Amenitie
+from app.models.user import User
+from app.models.amenity import Amenitie
 from app.extensions import db
-from sqlalchemy.orm import validates, relationship
+from sqlalchemy.orm import validates
+
+# Define the association table for the many-to-many relationship
+place_amenity = db.Table(
+    'place_amenity',
+    db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.Integer, db.ForeignKey('amenities.id'), primary_key=True)
+)
 
 class Place(BaseModel):
     __tablename__ = 'places'
 
-    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500), nullable=True)
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Foreign key to User
+    
+    # Define the relationships
+    owner = db.relationship('User', back_populates='places')
+    reviews = db.relationship('Review', back_populates='place')
+    amenities = db.relationship('Amenitie', secondary=place_amenity, back_populates='places')
 
     @validates('title')
     def validate_title(self, key, title):

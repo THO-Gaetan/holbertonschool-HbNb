@@ -2,28 +2,21 @@ amenities = {}
 
 from app.models.base_model import BaseModel
 from app.extensions import db
-from sqlalchemy.orm import validates, relationship
+from sqlalchemy.orm import validates
 
 class Amenitie(BaseModel):
-
     __tablename__ = 'amenities'
 
-    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, name):
-        super().__init__()
-        self.name = name
+    # Define the relationship
+    places = db.relationship('Place', secondary='place_amenity', back_populates='amenities')
 
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, value: str):
-        if not value:
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
             raise ValueError("Name cannot be empty")
-        self._name = value
+        return name
 
     def to_dict(self):
         """Convert the amenity object to a dictionary."""

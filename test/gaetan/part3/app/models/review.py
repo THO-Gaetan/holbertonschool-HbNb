@@ -2,10 +2,10 @@
 reviews = {}
 
 from app.models.base_model import BaseModel
-from app.models.users import User
-from app.models.places import Place
+from app.models.user import User
+from app.models.place import Place
 from app.extensions import db
-from sqlalchemy.orm import validates, relationship
+from sqlalchemy.orm import validates
 
 
 class Review(BaseModel):
@@ -18,10 +18,9 @@ class Review(BaseModel):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey('places.id'), nullable=False)
 
-    relationships = {
-        'user': relationship('User', back_populates='reviews'),
-        'place': relationship('Place', back_populates='reviews')
-    }
+    # Define the relationship
+    user = db.relationship('User', back_populates='reviews')
+    place = db.relationship('Place', back_populates='reviews')
 
     @validates('text')
     def validate_text(self, key, text):

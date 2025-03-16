@@ -6,18 +6,19 @@ from app.api.v1.amenities import api as amenity_ns
 from app.api.v1.places import api as place_ns
 from app.api.v1.reviews import api as review_ns
 from app.api.v1.auth import api as auth_ns
-from config import DevelopmentConfig, config
+from config import config
 
 
 
 def create_app(config_class=config['development']):
     app = Flask(__name__)
+    app.config.from_object(config_class)
 
     authorizations = {
-        'Bearer': {'type': 'apiKey','in': 'header','name': 'Authorization'}
+        'Bearer': {'type': 'apiKey','in': 'header','name': 'Authorization', 'description': 'JWT Token'}
     }
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', authorizations=authorizations, security='Bearer')
-    app.config.from_object(config_class)
+
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
