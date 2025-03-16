@@ -20,9 +20,12 @@ class UserList(Resource):
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')
+    @jwt_required()
     def post(self):
         """admin requests to register a new user"""
-
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
         user_data = api.payload
 
         data = request.json
@@ -43,7 +46,7 @@ class UserList(Resource):
     def get(self):
         """Retrieve a list of all users"""
         users = facade.get_all_user()
-        return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in users], 200
+        return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'password': user.password} for user in users], 200
 
 
 @api.route('/<user_id>')

@@ -2,7 +2,6 @@ from app.persistence.repository import SQLAlchemyRepository
 from app import db  # Assuming you have set up SQLAlchemy in your Flask app
 from app.models import User  # Import your models
 
-
 class UserRepository(SQLAlchemyRepository):
     def __init__(self):
         super().__init__(User)
@@ -15,6 +14,8 @@ class UserRepository(SQLAlchemyRepository):
         if user:
             for key, value in data.items():
                 setattr(user, key, value)
+            if 'password' in data and data['password']:
+                user.hash_password(data['password'])
             db.session.commit()
             return user
         return None

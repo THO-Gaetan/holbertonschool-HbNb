@@ -9,3 +9,12 @@ class PlaceRepository(SQLAlchemyRepository):
 
     def get_place_by_id(self, place_id):
         return Place.query.filter_by(place_id=place_id).first()
+    
+    def update_place(self, place_id, data):
+        place = self.get(place_id)
+        if place:
+            for key, value in data.items():
+                setattr(place, key, value)
+            db.session.commit()
+            return place
+        return None

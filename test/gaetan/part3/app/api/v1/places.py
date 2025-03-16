@@ -84,13 +84,13 @@ class AdminPlaceModify(Resource):
 
         place = facade.get_place(place_id)
         if not is_admin and place.owner_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
+            return {'error': 'Admin privileges required'}, 403
 
         place_data = api.payload
 
         try:
             updated_place = facade.update_place(place_id, place_data)
-            if not updated_place:
+            if updated_place is None:
                 return {'error': 'Place not found'}, 404
             return {'message': 'Place updated successfully'}, 200
         except ValueError as e:

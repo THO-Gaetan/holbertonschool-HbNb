@@ -10,19 +10,19 @@ from sqlalchemy.orm import validates
 # Define the association table for the many-to-many relationship
 place_amenity = db.Table(
     'place_amenity',
-    db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
-    db.Column('amenity_id', db.Integer, db.ForeignKey('amenities.id'), primary_key=True)
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
 )
 
 class Place(BaseModel):
     __tablename__ = 'places'
 
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(500), nullable=True)
-    price = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Foreign key to User
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)  # Foreign key to User
     
     # Define the relationships
     owner = db.relationship('User', back_populates='places')
@@ -72,25 +72,6 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
-
-    def to_dict(self):
-        """Convert the place object to a dictionary."""
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'price': self.price,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
-            'owner': {
-                'id': self.owner.id,
-                'first_name': self.owner.first_name,
-                'last_name': self.owner.last_name,
-                'email': self.owner.email
-            },
-            'reviews': [{'id': review.id, 'text': review.text, 'rating': review.rating} for review in self.reviews],
-            'amenities': [{'id': amenity.id, 'name': amenity.name} for amenity in self.amenities]
-        }
 
 def create_place(title, description, price, latitude, longitude, owner):
     place = Place(title, description, price, latitude, longitude, owner)

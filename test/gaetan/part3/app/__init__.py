@@ -14,6 +14,7 @@ def create_app(config_class=config['development']):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600
     authorizations = {
         'Bearer': {'type': 'apiKey','in': 'header','name': 'Authorization', 'description': 'JWT Token'}
     }

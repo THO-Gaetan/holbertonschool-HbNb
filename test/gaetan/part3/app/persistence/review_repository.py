@@ -12,3 +12,12 @@ class ReviewRepository(SQLAlchemyRepository):
     
     def get_reviews_by_user(self, user_id):
         return Review.query.filter_by(user_id=user_id).all()
+    
+    def update_review(self, review_id, data):
+        review = self.get(review_id)
+        if review:
+            for key, value in data.items():
+                setattr(review, key, value)
+            db.session.commit()
+            return review
+        return None

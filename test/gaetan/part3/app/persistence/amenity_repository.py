@@ -9,3 +9,12 @@ class AmenityRepository(SQLAlchemyRepository):
 
     def get_place_by_name(self, name):
         return Amenitie.query.filter_by(name=name).first()
+    
+    def update_amenitie(self, amenitie_id, data):
+        amenitie = self.get(amenitie_id)
+        if amenitie:
+            for key, value in data.items():
+                setattr(amenitie, key, value)
+            db.session.commit()
+            return amenitie
+        return None

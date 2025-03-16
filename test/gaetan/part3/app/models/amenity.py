@@ -7,7 +7,7 @@ from sqlalchemy.orm import validates
 class Amenitie(BaseModel):
     __tablename__ = 'amenities'
 
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(255), unique=True, nullable=False)
 
     # Define the relationship
     places = db.relationship('Place', secondary='place_amenity', back_populates='amenities')
@@ -18,12 +18,6 @@ class Amenitie(BaseModel):
             raise ValueError("Name cannot be empty")
         return name
 
-    def to_dict(self):
-        """Convert the amenity object to a dictionary."""
-        return {
-            'id': self.id,
-            'name': self.name
-        }
 
 def create_amenity(name):
     amenity = Amenitie(name)
