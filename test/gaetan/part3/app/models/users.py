@@ -3,7 +3,7 @@ from app.extensions import bcrypt
 from app.extensions import db
 import re
 from .base_model import BaseModel
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 
 class User(BaseModel):
     """
@@ -17,6 +17,11 @@ class User(BaseModel):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
+    relationships = {
+        'places': relationship('Place', back_populates='owner'),
+        'reviews': relationship('Review', back_populates='user')
+    }
 
     def verify_password(self, password: str) -> bool:
         """Verifies if the provided password matches the hashed password."""

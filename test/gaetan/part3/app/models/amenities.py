@@ -1,7 +1,8 @@
 amenities = {}
 
-from app.models.basemodel import BaseModel
+from app.models.base_model import BaseModel
 from app.extensions import db
+from sqlalchemy.orm import validates, relationship
 
 class Amenitie(BaseModel):
 

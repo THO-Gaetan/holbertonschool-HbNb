@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 reviews = {}
 
-from app.models.basemodel import BaseModel
+from app.models.base_model import BaseModel
 from app.models.users import User
 from app.models.places import Place
 from app.extensions import db
+from sqlalchemy.orm import validates, relationship
 
 
 class Review(BaseModel):
@@ -14,53 +15,37 @@ class Review(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(1000), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    
-    def __init__(self, text, rating, user, place):
-        super().__init__()
-        self.text = text
-        self.rating = rating
-        self.user = user
-        self.place = place
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id'), nullable=False)
 
-    @property
-    def text(self):
-        return self._text
-    
-    @text.setter
-    def text(self, value: str):
-        if not value:
+    relationships = {
+        'user': relationship('User', back_populates='reviews'),
+        'place': relationship('Place', back_populates='reviews')
+    }
+
+    @validates('text')
+    def validate_text(self, key, text):
+        if not text:
             raise ValueError("Text cannot be empty")
-        self._text = value
+        return text
     
-    @property
-    def rating(self):
-        return self._rating
-    
-    @rating.setter
-    def rating(self, value: int):
-        if value < 1 or value > 5:
+    @validates('rating')
+    def validate_rating(self, key, rating):
+        if rating < 1 or rating > 5:
             raise ValueError("Rating must be between 1 and 5")
-        self._rating = value
-    
-    @property
-    def user(self):
-        return self._user
-    
-    @user.setter
-    def user(self, value: User):
-        if not isinstance(value, User):
-            raise ValueError("User must be a User object")
-        self._user = value
+        return rating
 
-    @property
-    def place(self):
-        return self._place
-    
-    @place.setter
-    def place(self, value: Place):
-        if not isinstance(value, Place):
+    @validates('user_id')
+    def validate_user_id(self, key, user_id):
+        if not isinstance(user_id, User):
+            raise ValueError("User must be a User object")
+        return user_id
+
+    @validates('place_id')
+    def validate_place_id(self, key, place_id):
+        if not isinstance(place_id, Place):
             raise ValueError("Place must be a Place object")
-        self._place = value
+        return place_id
     
     def to_dict(self):
         """Convert the review object to a dictionary."""

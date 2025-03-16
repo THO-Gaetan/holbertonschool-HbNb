@@ -10,9 +10,6 @@ class UserRepository(SQLAlchemyRepository):
     def get_user_by_email(self, email):
         return User.query.filter_by(email=email).first()  
     
-    def get_user_by_id(self, user_id):
-        return User.query.filter_by(user_id=user_id).first()
-    
     def update_user(self, user_id, data):
         user = self.get(user_id)
         if user:
