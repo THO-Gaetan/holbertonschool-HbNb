@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -36,13 +37,15 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new place"""
+        current_user = get_jwt_identity()
         place_data = api.payload
 
         try:
             new_place = facade.create_place(place_data)
-            return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner.id}, 201
+            return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner_id}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -63,18 +66,65 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}}, 200
 
+    @api.response(200, 'Place deleted successfully')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def delete(self, place_id):
+        """Admin or owner requests to delete a place"""
+        current_user = get_jwt_identity()
+        # Vérifiez si l'utilisateur est un administrateur ou le propriétaire de la place
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+        # Suppression de la place
+        try:
+            facade.delete_place(place_id)  # Appelez la fonction pour supprimer la place
+            return {'message': 'Place deleted successfully'}, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
+@api.route('/places/<place_id>')
+class AdminPlaceModify(Resource):
     @api.expect(place_update_model)
     @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
+    @jwt_required()
     def put(self, place_id):
-        """Update a place's information"""
+        """Admin requests to update a place's information"""
+        current_user = get_jwt_identity()
+
+        # Set is_admin default to False if not exists
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+
+        place = facade.get_place(place_id)
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+
         place_data = api.payload
 
         try:
             updated_place = facade.update_place(place_id, place_data)
-            if not updated_place:
+            if updated_place is None:
                 return {'error': 'Place not found'}, 404
             return {'message': 'Place updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
+
+@api.route('/places/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all reviews for a specific place"""
+        reviews = facade.get_reviews_by_place(place_id)
+        if reviews is None:
+            return {'error': 'Place not found'}, 404
+        return [{'id': review.id, 'text': review.text, 'rating': review.rating, 'user_id': review.user.id, 'place_id': review.place.id} for review in reviews], 200

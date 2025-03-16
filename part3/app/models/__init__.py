@@ -1,6 +1,6 @@
-from .reviews import Review
-from .basemodel import BaseModel
-from .places import Place
-from .users import User
-from .amenities import Amenitie
+from .review import Review
+from .base_model import BaseModel
+from .place import Place
+from .user import User
+from .amenity import Amenitie
 
