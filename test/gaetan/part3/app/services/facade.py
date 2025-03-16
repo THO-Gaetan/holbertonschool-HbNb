@@ -3,6 +3,7 @@ from app.persistence.user_repository import UserRepository
 from app.persistence.place_repository import PlaceRepository
 from app.persistence.amenity_repository import AmenityRepository
 from app.persistence.review_repository import ReviewRepository
+from app.extensions import db  # Ensure the database session is imported
 
 class HBnBFacade:
     def __init__(self):
@@ -131,8 +132,9 @@ class HBnBFacade:
         review = self.review_repo.get(review_id)
         if not review:
             return None
-        self.review_repo.delete(review_id)
-        review.place.reviews.remove(review)
+        # Attach the review to the current session
+        review = db.session.merge(review)
+        self.review_repo.delete(review)
         return review
     
     def get_review_count_by_user_place(self, user_id, place_id):

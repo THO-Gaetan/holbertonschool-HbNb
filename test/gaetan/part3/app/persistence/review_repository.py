@@ -21,3 +21,7 @@ class ReviewRepository(SQLAlchemyRepository):
             db.session.commit()
             return review
         return None
+    
+    def delete(self, review):
+        db.session.delete(review)
+        db.session.commit()

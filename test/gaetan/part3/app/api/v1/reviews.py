@@ -94,11 +94,11 @@ class ReviewResource(Resource):
         user_id = current_user.get('id')
 
         reviews = facade.get_review(review_id)
-        if not is_admin and reviews.owner_id != user_id:
+        if not is_admin and reviews.user_id != user_id:
             return {'error': 'Unauthorized action'}, 403
-        review = facade.delete_review(review_id)
-        if review.user.id != current_user:
+        if reviews.user_id == current_user:
             return {'error': 'Unauthorized action.'}, 403
+        review = facade.delete_review(review_id)
 
         if review is None:
             return {'error': 'Review not found'}, 404
