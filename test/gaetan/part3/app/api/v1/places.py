@@ -66,6 +66,28 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}}, 200
 
+    @api.response(200, 'Place deleted successfully')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def delete(self, place_id):
+        """Admin or owner requests to delete a place"""
+        current_user = get_jwt_identity()
+        # Vérifiez si l'utilisateur est un administrateur ou le propriétaire de la place
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+        # Suppression de la place
+        try:
+            facade.delete_place(place_id)  # Appelez la fonction pour supprimer la place
+            return {'message': 'Place deleted successfully'}, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
 @api.route('/places/<place_id>')
 class AdminPlaceModify(Resource):
     @api.expect(place_update_model)

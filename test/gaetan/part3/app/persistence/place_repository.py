@@ -1,5 +1,5 @@
 from app.persistence.repository import SQLAlchemyRepository
-from app import db  # Assuming you have set up SQLAlchemy in your Flask app
+from app.extensions import db  # Assuming you have set up SQLAlchemy in your Flask app
 from app.models import Place # Import your models
 
 
@@ -18,3 +18,7 @@ class PlaceRepository(SQLAlchemyRepository):
             db.session.commit()
             return place
         return None
+    
+    def delete(self, place):
+        db.session.delete(place)
+        db.session.commit()

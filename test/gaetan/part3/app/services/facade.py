@@ -59,6 +59,16 @@ class HBnBFacade:
             return None
         return self.place_repo.update_place(place_id, place_data)
     
+    def delete_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        try:
+            self.place_repo.delete(place)  # Utilisez le repository pour supprimer la place
+        except Exception as e:
+            raise ValueError(f"An error occurred: {str(e)}")  # Soulever l'exception en cas d'erreur
+        return {'message': 'Place successfully deleted'}  # Retourne un message de succès
+    
     def create_amenity(self, amenity_data):
     # Placeholder for logic to create an amenity
         amenity = Amenitie(**amenity_data)
