@@ -1,0 +1,66 @@
+erDiagram
+    User {
+        int id PK
+        string first_name
+        string last_name
+        string email
+        string password
+        boolean is_admin
+    }
+
+    Place {
+        int id PK
+        string title
+        string description
+        float price
+        float latitude
+        float longitude
+        int owner_id FK
+    }
+
+    Review {
+        int id PK
+        string text
+        int rating
+        int user_id FK
+        int place_id FK
+    }
+
+    Amenity {
+        int id PK
+        string name
+    }
+
+    Place_Amenity {
+        int place_id PK, FK
+        int amenity_id PK, FK
+    }
+
+    Reservation {
+        int id PK
+        int user_id FK
+        int place_id FK
+        date reservation_date
+        date start_date
+        date end_date
+        string status
+    }
+    
+    Payment {
+        int id PK
+        int reservation_id FK
+        float amount
+        date payment_date
+        string payment_method
+        string status
+    }
+
+    %% Relationships %%
+    User ||--o{ Place : "owns"
+    User ||--o{ Review : "writes"
+    Place ||--o{ Review : "has"
+    Place ||--o{ Place_Amenity : "has"
+    Amenity ||--o{ Place_Amenity : "belongs to"
+    User ||--o{ Reservation : "makes"
+    Place ||--o{ Reservation : "is reserved by"
+    Reservation ||--o{ Payment : "has"

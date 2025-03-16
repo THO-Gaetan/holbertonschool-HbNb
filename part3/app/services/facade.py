@@ -1,15 +1,20 @@
-from app.models import User, Place, Amenitie, Review, BaseModel
-from app.persistence.repository import InMemoryRepository
+from app.models import User, Place, Amenitie, Review
+from app.persistence.user_repository import UserRepository
+from app.persistence.place_repository import PlaceRepository
+from app.persistence.amenity_repository import AmenityRepository
+from app.persistence.review_repository import ReviewRepository
+from app.extensions import db  # Ensure the database session is imported
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
+        self.amenity_repo = AmenityRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
+        user.hash_password(user_data['password'])
         self.user_repo.add(user)
         return user
 
@@ -20,10 +25,10 @@ class HBnBFacade:
         return self.user_repo.get_all()
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
     
-    def update_user(self, user_id, user_data):
-        return self.user_repo.update(user_id, user_data)
+    def update_users(self, user_id, user_data):
+        return self.user_repo.update_user(user_id, user_data)
 
     def create_place(self, place_data):
         user = self.user_repo.get(place_data['owner_id'])
@@ -35,7 +40,7 @@ class HBnBFacade:
             price=place_data['price'],
             latitude=place_data['latitude'],
             longitude=place_data['longitude'],
-            owner=user
+            owner_id=user.id  # Use owner_id instead of owner
         )
         self.place_repo.add(place)
         return place
@@ -50,7 +55,20 @@ class HBnBFacade:
 
     def update_place(self, place_id, place_data):
         # Placeholder for logic to update a place
-        return self.place_repo.update(place_id, place_data)
+        place = self.place_repo.get(place_id)
+        if not place:
+            return None
+        return self.place_repo.update_place(place_id, place_data)
+    
+    def delete_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        try:
+            self.place_repo.delete(place)  # Utilisez le repository pour supprimer la place
+        except Exception as e:
+            raise ValueError(f"An error occurred: {str(e)}")  # Soulever l'exception en cas d'erreur
+        return {'message': 'Place successfully deleted'}  # Retourne un message de succès
     
     def create_amenity(self, amenity_data):
     # Placeholder for logic to create an amenity
@@ -68,14 +86,23 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, amenity_data):
         # Update an amenity and return the updated object or None if not found
-        return self.amenity_repo.update(amenity_id, amenity_data)
+        amenitie = self.amenity_repo.get(amenity_id)
+        if not amenitie:
+            return None
+        return self.amenity_repo.update_amenitie(amenity_id, amenity_data)
     
     def create_review(self, review_data):
         user = self.user_repo.get(review_data['user_id'])
         place = self.place_repo.get(review_data['place_id'])
         if not user or not place:
             raise ValueError("User or Place not found")
-        review = Review(review_data['text'], review_data['rating'], user, place)
+        # Correctly initialize the Review object using keyword arguments
+        review = Review(
+            text=review_data['text'],
+            rating=review_data['rating'],
+            user_id=user.id,
+            place_id=place.id
+        )
         self.review_repo.add(review)
         place.add_review(review)
         return review
@@ -96,12 +123,22 @@ class HBnBFacade:
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review
-        return self.review_repo.update(review_id, review_data)
+        review = self.review_repo.get(review_id)
+        if not review:
+            return None
+        return self.review_repo.update_review(review_id, review_data)
 
     def delete_review(self, review_id):
         review = self.review_repo.get(review_id)
         if not review:
             return None
-        self.review_repo.delete(review_id)
-        review.place.reviews.remove(review)
+        # Attach the review to the current session
+        review = db.session.merge(review)
+        self.review_repo.delete(review)
         return review
+    
+    def get_review_count_by_user_place(self, user_id, place_id):
+        return len([
+            review for review in self.review_repo.get_all() 
+            if isinstance(review, Review) and review.user.id == user_id and review.place.id == place_id
+        ])
