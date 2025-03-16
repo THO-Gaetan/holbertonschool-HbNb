@@ -2,38 +2,36 @@ import os
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'auregaKey')  # Clé secrète pour signer les JWT
-    
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'default_jwt_secret_key')  # Clé secrète pour signer les JWT
+    JWT_JSON_SERIALIZATION_ENABLED = True
+    JWT_TOKEN_LOCATION = ['headers']
+    JWT_HEADER_TYPE = 'Bearer'
     DEBUG = False
     # Paramètre de Flask-SQLAlchemy qui sert à désactiver ou
     # activer le suivi des modifications d'objets dans la
     # base de données.
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # Base de données de développement
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'auregaKey')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENVIRONMENT = 'development'
-    
-class OnlineConfig(Config):
-    DEBUG = False
-    # Base de données pour l'environnement en ligne via 
-    # une variable d'environnement
-SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://username:password@localhost:5000/hbnb_db')
-ENVIRONMENT = 'online'
-    
+
 class TestingConfig(Config):
     TESTING = True
-    # Base de données de test
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///testing.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENVIRONMENT = 'testing'
+
+class ProductionConfig(Config):
+    PRODUCTION = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///production.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    ENVIRONMENT = 'production'
 
 config = {
     'development': DevelopmentConfig,
     'default': DevelopmentConfig,
-    'online': OnlineConfig,
-    'testing': TestingConfig
+    'testing': TestingConfig,
+    'production': ProductionConfig
 }
