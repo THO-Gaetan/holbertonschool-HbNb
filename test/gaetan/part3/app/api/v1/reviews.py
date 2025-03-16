@@ -30,10 +30,12 @@ class ReviewList(Resource):
         place = facade.get_place(review_data['place_id'])
         if not place:
             return {'error': 'Place not found'}, 404
-        if place.owner_id == current_user:
+        if not current_user['id'] == review_data['user_id']:
+            return {'error': 'Unauthorized action'}, 403
+        if place.owner_id == current_user['id']:
             return {'error': 'You cannot review your own place.'}, 400
         if review_count > 0:
-            return {'error': 'You can only review a place once.'}, 400
+            return {'error': 'You have already reviewed this place.'}, 400
 
         try:
             new_review = facade.create_review(review_data)
@@ -92,25 +94,13 @@ class ReviewResource(Resource):
         # Set is_admin default to False if not exists
         is_admin = current_user.get('is_admin', False)
         user_id = current_user.get('id')
-
-        reviews = facade.get_review(review_id)
-        if not is_admin and reviews.user_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
-        if reviews.user_id == current_user:
-            return {'error': 'Unauthorized action.'}, 403
-        review = facade.delete_review(review_id)
-
+        review = facade.get_review(review_id)
         if review is None:
             return {'error': 'Review not found'}, 404
+        if not is_admin and review.user_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+        try:
+            facade.delete_review(review_id)
+        except Exception as e:
+            return {'error': str(e)}, 400
         return {'message': 'Review deleted successfully'}, 200
-
-@api.route('/places/<place_id>/reviews')
-class PlaceReviewList(Resource):
-    @api.response(200, 'List of reviews for the place retrieved successfully')
-    @api.response(404, 'Place not found')
-    def get(self, place_id):
-        """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place(place_id)
-        if reviews is None:
-            return {'error': 'Place not found'}, 404
-        return [{'id': review.id, 'text': review.text, 'rating': review.rating, 'user_id': review.user.id, 'place_id': review.place.id} for review in reviews], 200

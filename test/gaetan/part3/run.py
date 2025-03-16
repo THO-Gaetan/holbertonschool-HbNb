@@ -25,6 +25,7 @@ def insert_initial_data():
         db.session.add(admin_user)
         db.session.commit()
         print("Admin user inserted successfully.")
+
 if __name__ == "__main__":
     insert_initial_data()
 
@@ -46,10 +47,10 @@ def insert_initial_aminitie():
         db.session.add_all(new_aminitie)
         db.session.commit()
         print("Aminities inserted successfully.")
+
 if __name__ == "__main__":
     insert_initial_aminitie()
-        
-        
+          
 app = create_app()
 
 if __name__ == "__main__":
