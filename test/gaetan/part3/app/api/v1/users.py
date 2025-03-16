@@ -14,18 +14,14 @@ user_model = api.model('User', {
 })
 
 @api.route('/users/')
-class AdminUserCreate(Resource):
+class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')
-    @jwt_required()
     def post(self):
         """admin requests to register a new user"""
-        current_user = get_jwt_identity()
-        if not current_user.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
 
         user_data = api.payload
 

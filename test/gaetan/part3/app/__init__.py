@@ -6,7 +6,6 @@ from app.api.v1.amenities import api as amenity_ns
 from app.api.v1.places import api as place_ns
 from app.api.v1.reviews import api as review_ns
 from app.api.v1.auth import api as auth_ns
-from app.api.v1.admin import api as admin_ns
 from config import DevelopmentConfig, config
 
 
@@ -31,5 +30,5 @@ def create_app(config_class=config['development']):
     api.add_namespace(place_ns, path='/api/v1/places')
     api.add_namespace(review_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1')
-    api.add_namespace(admin_ns, path='/api/v1/admin')
+
     return app
