@@ -68,6 +68,7 @@ class PlaceResource(Resource):
 
 @api.route('/places/<place_id>')
 class AdminPlaceModify(Resource):
+    @api.expect(place_update_model)
     @api.response(200, 'Place updated successfully')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Unauthorized action')

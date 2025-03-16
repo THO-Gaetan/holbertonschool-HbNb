@@ -1,8 +1,15 @@
 amenities = {}
 
 from app.models.basemodel import BaseModel
+from app.extensions import db
 
 class Amenitie(BaseModel):
+
+    __tablename__ = 'amenities'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
     def __init__(self, name):
         super().__init__()
         self.name = name

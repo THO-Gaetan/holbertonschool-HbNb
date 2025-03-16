@@ -15,6 +15,7 @@ user_model = api.model('User', {
 
 @api.route('/users/')
 class AdminUserCreate(Resource):
+    @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
@@ -26,13 +27,14 @@ class AdminUserCreate(Resource):
         if not current_user.get('is_admin'):
             return {'error': 'Admin privileges required'}, 403
 
-        user_info = request.json
-        email = user_info.get('email')
+        user_data = api.payload
 
+        data = request.json
+        email = data.get('email')
+        
         # Check if email is already in use
         if facade.get_user_by_email(email):
             return {'error': 'Email already registered'}, 400
-        user_data = api.payload
 
         try:
             # Simulate email uniqueness check (to be replaced by real validation with persistence)
@@ -62,6 +64,7 @@ class UserResource(Resource):
 @api.route('/users/<user_id>')
 class AdminUserResource(Resource):
     """Admin requets to update a user's information"""
+    @api.expect(user_model, validate=True)
     @api.response(200, 'User details retrieved successfully')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')

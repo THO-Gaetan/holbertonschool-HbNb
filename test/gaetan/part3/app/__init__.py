@@ -11,15 +11,19 @@ from config import DevelopmentConfig, config
 
 
 
-def create_app(config_class="default"):
+def create_app(config_class=config['development']):
     app = Flask(__name__)
-    app.config.from_object(config[config_class])
-    app.config ['JWT_SECRET_KEY'] = 'aurtan'
+
+    authorizations = {
+        'Bearer': {'type': 'apiKey','in': 'header','name': 'Authorization'}
+    }
+    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', authorizations=authorizations, security='Bearer')
+    app.config.from_object(config_class)
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
-    environnment = app.config['ENVIRONMENT']
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API - {environnment} mode')
+    with app.app_context():
+        db.create_all()
 
     # Register the users namespace
     api.add_namespace(users_ns, path='/api/v1/users')

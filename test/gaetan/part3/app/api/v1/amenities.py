@@ -11,6 +11,7 @@ amenity_model = api.model('Amenity', {
 
 @api.route('/amenities/')
 class AdminAmenityCreate(Resource):
+    @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')
@@ -51,6 +52,7 @@ class AmenityResource(Resource):
         
 @api.route('/amenities/<amenity_id>')
 class AdminAmenityModify(Resource):
+    @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Admin privileges required')
