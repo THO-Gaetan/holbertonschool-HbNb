@@ -25,6 +25,7 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
+    'amenities': fields.List(fields.String, description='Liste des noms des équipements à associer à la place')
 })
 place_update_model = api.model('PlaceUpdate', {
     'title': fields.String(required=True, description='Title of the place'),
@@ -44,8 +45,43 @@ class PlaceList(Resource):
         place_data = api.payload
 
         try:
+            # Créer la place sans équipements pour l'instant
             new_place = facade.create_place(place_data)
-            return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner_id}, 201
+
+            # Vérifier si des équipements sont fournis avec leurs IDs
+            amenities_ids = place_data.get('amenities', [])
+            
+            if amenities_ids:
+                # Récupérer les équipements en fonction de leurs IDs
+                amenities = facade.get_by_ids(amenities_ids)
+
+                # Filtrer les équipements valides (non None)
+                valid_amenities = [amenity for amenity in amenities if amenity is not None]
+                
+                # Vérifier s'il y a des équipements invalides (non trouvés par ID)
+                invalid_amenities = [amenity_id for amenity_id, amenity in zip(amenities_ids, amenities) if amenity is None]
+                
+                if invalid_amenities:
+                    return {'error': f"The following amenity IDs were not found: {', '.join(invalid_amenities)}"}, 400
+
+                # Si des équipements valides existent, les associer à la place
+                if valid_amenities:
+                    facade.add_amenities_to_place(new_place.id, valid_amenities)
+
+            # Récupérer les équipements associés à la place après l'ajout
+            place_amenities = [{'id': amenity.id, 'name': amenity.name} for amenity in new_place.amenities]
+
+            return {
+                'id': new_place.id,
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                'owner_id': new_place.owner_id,
+                'amenities': place_amenities  # Liste des équipements associés à la place
+            }, 201
+
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -62,9 +98,15 @@ class PlaceResource(Resource):
     def get(self, place_id):
         """Get place details by ID"""
         places = facade.get_place(place_id)
+        amenity_details = []
+        for amenity in places.amenities:
+            amenity_details.append({
+                'id': amenity.id,
+                'name': amenity.name
+            })
         if not places:
             return {'error': 'Place not found'}, 404
-        return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}}, 200
+        return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}, 'amenities': amenity_details}, 200
 
     @api.response(200, 'Place deleted successfully')
     @api.response(403, 'Unauthorized action')
@@ -106,7 +148,7 @@ class AdminPlaceModify(Resource):
 
         place = facade.get_place(place_id)
         if not is_admin and place.owner_id != user_id:
-            return {'error': 'Unauthorized action'}, 403
+            return {'error': 'Admin privileges required'}, 403
 
         place_data = api.payload
 
@@ -118,13 +160,19 @@ class AdminPlaceModify(Resource):
         except ValueError as e:
             return {'error': str(e)}, 400
 
-@api.route('/places/<place_id>/reviews')
-class PlaceReviewList(Resource):
-    @api.response(200, 'List of reviews for the place retrieved successfully')
+@api.route('/places/<place_id>/amenities')
+class PlaceAmenities(Resource):
+    @api.response(200, 'List of amenities retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place(place_id)
-        if reviews is None:
+        """Get amenities associated with a place"""
+        place = facade.get_place(place_id)
+
+        if not place:
             return {'error': 'Place not found'}, 404
-        return [{'id': review.id, 'text': review.text, 'rating': review.rating, 'user_id': review.user.id, 'place_id': review.place.id} for review in reviews], 200
+        
+        # Récupérer les équipements associés à cette place
+        amenities = place.amenities
+
+        # Retourner les données des équipements
+        return [{'id': amenity.id, 'name': amenity.name} for amenity in amenities], 200

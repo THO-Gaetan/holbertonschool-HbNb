@@ -3,7 +3,10 @@ from app.persistence.user_repository import UserRepository
 from app.persistence.place_repository import PlaceRepository
 from app.persistence.amenity_repository import AmenityRepository
 from app.persistence.review_repository import ReviewRepository
-from app.extensions import db  # Ensure the database session is imported
+
+from uuid import UUID
+
+from app.extensions import db
 
 class HBnBFacade:
     def __init__(self):
@@ -42,8 +45,17 @@ class HBnBFacade:
             longitude=place_data['longitude'],
             owner_id=user.id  # Use owner_id instead of owner
         )
+        
+         # Ajouter les équipements à la place directement lors de la création
+        if 'amenities' in place_data:
+            amenities = [self.amenity_repo.get(amenity_id) for amenity_id in place_data['amenities']]  # Récupérer les équipements par leur ID
+            place.amenities.extend(amenities)  # Ajouter les équipements à la place 
+        
+        
         self.place_repo.add(place)
         return place
+    
+    
 
     def get_place(self, place_id):
         # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
@@ -90,6 +102,34 @@ class HBnBFacade:
         if not amenitie:
             return None
         return self.amenity_repo.update_amenitie(amenity_id, amenity_data)
+    
+    def get_amenities_by_names(names):
+        """Récupérer les équipements par leurs noms"""
+        amenities = Amenitie.query.filter(Amenitie.name.in_(names)).all()
+        return amenities
+    
+    def add_amenities_to_place(self, place_id, amenities):
+         # Ici, tu peux ajouter la logique pour associer les équipements au lieu
+        place = self.get_by_ids(place_id)
+        if not place:
+            raise ValueError(f"Place with ID {place_id} not found.")
+        place.amenities.extend(amenities)
+        self.place_repo.save(place)
+        return place
+    
+    
+    def get_by_ids(self, amenity_ids):
+        """Récupère une liste d'équipements en fonction de leurs IDs."""
+    # Si amenity_ids est une chaîne, on la transforme en liste
+        if isinstance(amenity_ids, str):
+            amenity_ids = [amenity_ids]
+    
+    # Convertir chaque ID en UUID si c'est une chaîne
+        amenity_ids = [UUID(id) if isinstance(id, str) else id for id in amenity_ids]
+
+    # Requête pour récupérer les équipements
+        amenities = Amenitie.query.filter(Amenitie.id.in_(amenity_ids)).all()
+        return amenities
     
     def create_review(self, review_data):
         user = self.user_repo.get(review_data['user_id'])
