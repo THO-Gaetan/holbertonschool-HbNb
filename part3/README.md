@@ -43,7 +43,7 @@ Cela démarrera le serveur Flask sur http://localhost:5000.
 
 ## 3. Structure du projet
 ![alt text](bandeau.png)
-#### 3.1. Dossier api/
+#### 3.1. Dossier app/api/
 Contient les routes API pour interagir avec les utilisateurs, les lieux, les équipements, et les avis.
 
 * *__users.py__* : Routes pour gérer les utilisateurs.
@@ -51,7 +51,7 @@ Contient les routes API pour interagir avec les utilisateurs, les lieux, les éq
 * *__amenities.py__* : Routes pour gérer les équipements.
 * *__reviews.py__* : Routes pour gérer les avis.
 
-#### 3.2. Dossier models/
+#### 3.2. Dossier app/models/
 
 Contient les modèles de données pour interagir avec la base de données via SQLAlchemy.
 
@@ -60,6 +60,14 @@ Contient les modèles de données pour interagir avec la base de données via SQ
 * *__amenity.py__* : Modèle pour l'équipement.
 * *__review.py__* : Modèle pour l'avis.
 
+### 3.3. Dossier instance/
+
+    * *__development.db__* : Database
+
+### 3.4. Dossier persistence/
+
+    * *__respository__* * : gére l'accès aux donnée
+  
 ## 4. Utilisation de l'API
 ![alt text](bandeau.png)
 #### 4.1. Authentification
