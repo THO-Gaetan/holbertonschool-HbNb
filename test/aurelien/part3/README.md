@@ -1,11 +1,11 @@
-![alt text](<HBNB PART2.PNG>)
+![alt text](<hbnb3.jpg>)
 
 # HBnB - Authentication & Database
 
 
 HBNB est une application web inspirée d'Airbnb, permettant aux utilisateurs de rechercher et réserver des lieux de vacances. Développée avec Flask et SQLAlchemy, elle offre des fonctionnalités pour gérer les utilisateurs, lieux, équipements et avis.
 
-
+![alt text](<bandeau.jpg>)
 ## 1. Fonctionnalités principales
 
 __Gestion des utilisateurs__ : Inscription, modification, mise à jour et suppression de comptes d'utilisateur.
@@ -18,7 +18,7 @@ __Gestion des avis__ : Permet aux utilisateurs de laisser des avis sur les lieux
 
 __API RESTful__ : Interaction avec l'application via des endpoints API pour gérer les données.
 
-
+![alt text](<bandeau.jpg>)
 ## 2. Installation et lancement
 
 #### 2.1. Installation des dépendances
@@ -37,7 +37,7 @@ Pour démarrer l'application en local, exécutez la commande suivante :
 python3 run.py
 ```
 Cela démarrera le serveur Flask sur http://localhost:5000.
-
+![alt text](<bandeau.jpg>)
 ## 3. Structure du projet
 #### 3.1. Dossier api/
 Contient les routes API pour interagir avec les utilisateurs, les lieux, les équipements, et les avis.
@@ -55,7 +55,7 @@ Contient les modèles de données pour interagir avec la base de données via SQ
 * *__place.py__* : Modèle pour le lieu.
 * *__amenity.py__* : Modèle pour l'équipement.
 * *__review.py__* : Modèle pour l'avis.
-
+![alt text](<bandeau.jpg>)
 ## 4. Utilisation de l'API
 #### 4.1. Authentification
 
