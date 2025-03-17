@@ -5,9 +5,9 @@
 
 HBNB est une application web inspirée d'Airbnb, permettant aux utilisateurs de rechercher et réserver des lieux de vacances. Développée avec Flask et SQLAlchemy, elle offre des fonctionnalités pour gérer les utilisateurs, lieux, équipements et avis.
 
-![alt text](<bandeau.jpg>)
+![alt text](bandeau.jpg)
 ## 1. Fonctionnalités principales
-
+![alt text](bandeau.jpg)
 __Gestion des utilisateurs__ : Inscription, modification, mise à jour et suppression de comptes d'utilisateur.
 
 __Gestion des lieux__ : Création, mise à jour et suppression des lieux de vacances.
@@ -18,9 +18,9 @@ __Gestion des avis__ : Permet aux utilisateurs de laisser des avis sur les lieux
 
 __API RESTful__ : Interaction avec l'application via des endpoints API pour gérer les données.
 
-![alt text](bandeau.png)
-## 2. Installation et lancement
 
+## 2. Installation et lancement
+![alt text](bandeau.jpg)
 #### 2.1. Installation des dépendances
 
 Clonez le dépôt et installez les dépendances nécessaires :
