@@ -129,5 +129,7 @@ __Obtenir le token__ : En cas de succès, l'API renvoie un token JWT qui contien
 
 ## 5.Auteurs :
 The project was developped by :
+
 [![Anurag’s github stats](https://github-readme-stats.vercel.app/api?username=Aurelien292)](https://github.com/Aurelien292) ==> All the works
+
 [![Anurag’s github stats](https://github-readme-stats.vercel.app/api?username=THO-Gaetan)](https://github.com/THO-Gaetan) ==> All the works
