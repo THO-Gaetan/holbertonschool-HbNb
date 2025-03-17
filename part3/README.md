@@ -66,7 +66,7 @@ Contient les modèles de données pour interagir avec la base de données via SQ
 
 ### 3.4. Dossier persistence/
 
-* *__respository__* * : gére l'accès aux donnée
+* *__respository__* * : gére l'accès aux données
   
 ## 4. Utilisation de l'API
 ![alt text](bandeau.png)
