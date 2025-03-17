@@ -1,5 +1,8 @@
 ![alt text](<hbnb3.jpg>)
 
+![version](https://img.shields.io/badge/version-3.9.1-red)
+![shell](https://img.shields.io/badge/Inspected-green)
+
 # HBnB - Authentication & Database
 
 
