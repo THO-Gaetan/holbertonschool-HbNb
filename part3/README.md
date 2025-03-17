@@ -62,11 +62,11 @@ Contient les modèles de données pour interagir avec la base de données via SQ
 
 ### 3.3. Dossier instance/
 
-    * *__development.db__* : Database
+* *__development.db__* : Database
 
 ### 3.4. Dossier persistence/
 
-    * *__respository__* * : gére l'accès aux donnée
+* *__respository__* * : gére l'accès aux donnée
   
 ## 4. Utilisation de l'API
 ![alt text](bandeau.png)
