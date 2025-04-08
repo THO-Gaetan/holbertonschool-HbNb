@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('amenities', description='Amenity operations')
 
@@ -73,3 +73,21 @@ class AdminAmenityModify(Resource):
             return {'message': 'Amenity updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
+        
+@api.route('/amenities/<amenity_id>/places')
+class Research(Resource):
+    @api.response(200, 'List of places associated with an amenity retrieved successfully')
+    @api.response(404, 'Amenity not found')
+    def get(self, amenity_id):
+        """Get places associated with an amenity"""
+        
+        amenity = facade.get_amenity(amenity_id)
+
+        if not amenity:
+            return {'error': 'Amenity not found'}, 404
+        
+        # Récupérer les places associées à cet équipement
+        places = amenity.places  # Grâce à la relation many-to-many
+
+        # Retourner les données des places
+        return [{'id': place.id, 'title': place.title, 'description': place.description} for place in places], 200

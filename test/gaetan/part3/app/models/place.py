@@ -24,6 +24,7 @@ class Place(BaseModel):
     longitude = db.Column(db.Float, nullable=False)
     owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)  # Foreign key to User
     
+    
     # Define the relationships
     owner = db.relationship('User', back_populates='places')
     reviews = db.relationship('Review', back_populates='place')

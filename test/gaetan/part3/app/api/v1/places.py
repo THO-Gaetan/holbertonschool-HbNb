@@ -25,6 +25,7 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
+    'amenities': fields.List(fields.String, description='Liste des noms des équipements à associer à la place')
 })
 place_update_model = api.model('PlaceUpdate', {
     'title': fields.String(required=True, description='Title of the place'),
@@ -44,8 +45,43 @@ class PlaceList(Resource):
         place_data = api.payload
 
         try:
+            # Créer la place sans équipements pour l'instant
             new_place = facade.create_place(place_data)
-            return {'id': new_place.id, 'title': new_place.title, 'description': new_place.description, 'price': new_place.price, 'latitude': new_place.latitude, 'longitude': new_place.longitude, 'owner_id': new_place.owner_id}, 201
+
+            # Vérifier si des équipements sont fournis avec leurs IDs
+            amenities_ids = place_data.get('amenities', [])
+
+            if amenities_ids:
+                # Récupérer les équipements en fonction de leurs IDs
+                amenities = facade.get_by_ids(amenities_ids)
+
+                # Filtrer les équipements valides (non None)
+                valid_amenities = [amenity for amenity in amenities if amenity is not None]
+                
+                # Vérifier s'il y a des équipements invalides (non trouvés par ID)
+                invalid_amenities = [amenity_id for amenity_id, amenity in zip(amenities_ids, amenities) if amenity is None]
+                
+                if invalid_amenities:
+                    return {'error': f"The following amenity IDs were not found: {', '.join(invalid_amenities)}"}, 400
+
+                # Si des équipements valides existent, les associer à la place
+                if valid_amenities:
+                    facade.add_amenities_to_place(new_place.id, valid_amenities)
+
+            # Récupérer les équipements associés à la place après l'ajout
+            place_amenities = [{'id': amenity.id, 'name': amenity.name} for amenity in new_place.amenities]
+
+            return {
+                'id': new_place.id,
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                'owner_id': new_place.owner_id,
+                'amenities': place_amenities  # Liste des équipements associés à la place
+            }, 201
+
         except ValueError as e:
             return {'error': str(e)}, 400
 
