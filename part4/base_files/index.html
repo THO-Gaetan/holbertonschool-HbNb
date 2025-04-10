@@ -8,21 +8,49 @@
 </head>
 <body>
     <header>
-        <nav>
-            <a href="login.html" id="login-link">Login</a>
-        </nav>
+        <div class="logo-container">
+            <a href="index.html"><img src="./images/logo.png" alt="Logo" class="logo"></a>
+            <a href="login.html" class="login-button">Login</a>
+        </div>
     </header>
     <main>
+        <h1>Available Places</h1>
         <section id="filter">
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+                <option value="1">All</option>
+                <option value="2">10</option>
+                <option value="3">50</option>
+                <option value="4">100</option>
             </select>
         </section>
-        <section id="places-list">
-            <!-- List of places will be populated dynamically -->
+        <section class="places-list">
+            <article class="place-card">
+            <div class="places-info">
+                <h2>Cozy Apartment</h2>
+                <p class="price">Price per night: $70</p>
+                <a href="place.html" class="details-button">View Details</a>
+            </div>
+        </article>
+        <article class="place-card">
+            <div class="places-info">
+                <h2>Cozy Apartment in Paris</h2>
+                <p class="price">Price per night: $320</p>
+                <a href="place.html" class="details-button">View Details</a>
+            </div>
+        </article>
+        <article class="place-card">
+            <div class="places-info">
+                <h2>Cozy Apartment in Downtown</h2>
+                <p class="price">Price per night: $120</p>
+                <a href="place.html" class="details-button">View Details</a>
+            </div>
+        </article>
         </section>
     </main>
     <script src="scripts.js"></script>
+    <footer>
+        <p>&copy; 2025 HBNB Evolution - All rights reserved</p>
+    </footer>
 </body>
 </html>
