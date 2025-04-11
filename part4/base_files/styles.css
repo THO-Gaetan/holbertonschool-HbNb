@@ -119,6 +119,10 @@ main label {
     margin: 20px;
 }
 
+#login-form h2 {
+    margin-bottom: 1rem;
+}
+
 .logo-container {
     display: flex;
     justify-content: space-between;
@@ -172,24 +176,24 @@ main label {
     align-items: center;
 }
 
-.places-info {
+.place-card-info {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-.places-info h2 {
+.place-card-info h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
-.places-info p {
+.place-card-info p {
     font-size: 1rem;
     margin-bottom: 1rem;
 }
 
-.places-info a.details-button {
+.details-button {
     color: #333;
     text-decoration: none;
     font-weight: bold;
@@ -199,7 +203,7 @@ main label {
     border-radius: 5px;
 }
 
-.place-infos a.details-button:hover {
+.details-button:hover {
     background-color: #ff9100;
 }
 
@@ -325,7 +329,7 @@ main label {
     border-radius: 25px;
     background-color: transparent;
     border: 2px solid rgba(255,255,255,0.2);
-    color: #fff;
+    color: #000000;
     padding-right: 40px;
     font-size: 15px;
     font-weight: bold;
