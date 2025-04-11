@@ -139,6 +139,15 @@ main label {
     text-decoration: none;
     cursor: pointer;
     text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.login-button:hover {
+    background-color: #09c0a8;
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(9, 192, 168, 0.5); /* Add subtle glow effect */
 }
 
 .places-list {
@@ -240,7 +249,7 @@ main label {
     display: inline-flex;
     background-color: #09c0a8;
     color: #ffffff;
-    margin-left: 45%;
+    margin-left: 45.5%;
     padding: 0.5rem 1rem;
     border-radius: 10px;
     text-decoration: none;
@@ -289,4 +298,36 @@ main label {
     display: block;
     width: 100%;
     cursor: pointer;
+}
+.login-submit {
+    background-color: #09c0a8;
+    color: #ffffff;
+    margin-top: 1.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    cursor: pointer;
+}
+
+.input-container {
+    width: 100%;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 25px;
+    background-color: transparent;
+    border: 2px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding-right: 40px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 6.4px;
 }

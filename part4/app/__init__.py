@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_restx import Api
+from flask_cors import CORS
 from app.extensions import bcrypt, jwt, db
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenity_ns
@@ -13,6 +14,9 @@ from config import config
 def create_app(config_class=config['development']):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Initialize CORS with support for all routes and origins
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600
     authorizations = {
@@ -32,5 +36,14 @@ def create_app(config_class=config['development']):
     api.add_namespace(place_ns, path='/api/v1/places')
     api.add_namespace(review_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1')
+    
+    # Add route for serving static files from base_files directory
+    @app.route('/')
+    def index():
+        return send_from_directory('../base_files', 'index.html')
+        
+    @app.route('/<path:path>')
+    def static_files(path):
+        return send_from_directory('../base_files', path)
 
     return app
