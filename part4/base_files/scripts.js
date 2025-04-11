@@ -61,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('place-details-id')) {
     getPlaceDetails();
   }
+  if (document.querySelector('review-form')) {
+    console.log("Found review form, setting up submission handler");
+    setupAddReviewPage();
+  }
 });
 
 // Function to check if user is logged in and update the auth button
@@ -193,6 +197,13 @@ async function getPlaceDetails() {
       return;
     }
     
+    // Update the Add Review link immediately after getting the place ID
+    const addReviewLink = document.getElementById('add-review-link');
+    if (addReviewLink) {
+      addReviewLink.href = `add_review.html?id=${placeId}`;
+      console.log("Updated review link to:", addReviewLink.href); // Debug
+    }
+
     // Show loading indicator
     placeDetailsContainer.innerHTML = '<p>Loading place details...</p>';
     
@@ -256,7 +267,7 @@ async function getPlaceDetails() {
 
 // Function to load reviews for a specific place
 async function loadPlaceReviews(placeId) {
-  const reviewsContainer = document.getElementById('reviews');
+  const reviewsContainer = document.getElementById('reviews-details');
   if (!reviewsContainer) return;
   
   // Keep the heading and the form
@@ -316,8 +327,24 @@ async function loadPlaceReviews(placeId) {
       });
     }
     
-    // Add the review form back
-    reviewsContainer.appendChild(addReviewSection);
+    // Check if user is authenticated before adding the review form
+    const hasToken = document.cookie.split(';').some(item => item.trim().startsWith('token='));
+    
+    if (hasToken) {
+      // User is authenticated, add the review form
+      reviewsContainer.appendChild(addReviewSection);
+    } else {
+      // User is not authenticated, show login message instead
+      const loginMessage = document.createElement('div');
+      loginMessage.className = 'login-message'; // Make sure this matches your CSS class
+      loginMessage.innerHTML = `
+        <p>Please <a href="login.html">login</a> to submit a review.</p>
+      `;
+      reviewsContainer.appendChild(loginMessage);
+
+      // For debugging, add a console log
+      console.log('Added login message element:', loginMessage);
+    }
     
   } catch (error) {
     console.error('Error fetching reviews:', error);
@@ -327,60 +354,78 @@ async function loadPlaceReviews(placeId) {
     reviewsContainer.appendChild(addReviewSection);
   }
   
-  // Setup review form submission
-  setupReviewForm(placeId);
 }
 
-// Function to handle review form submission
-function setupReviewForm(placeId) {
-  const reviewForm = document.getElementById('review-form');
-  if (!reviewForm) return;
+// Function to set up the add_review.html page
+function setupAddReviewPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const placeId = urlParams.get('id');
+  const hasToken = document.cookie.split(';').some(item => item.trim().startsWith('token='));
+  // Check if user is authenticated
+  if (!hasToken) {
+    alert('You must be logged in to submit a review');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  if (!placeId) {
+    alert('No place ID specified');
+    window.location.href = 'index.html';
+    return;
+  }
   
-  reviewForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    
-    // Check if user is logged in (has token)
-    const hasToken = document.cookie.split(';').some(item => item.trim().startsWith('token='));
-    if (!hasToken) {
-      alert('You must be logged in to submit a review');
-      window.location.href = 'login.html';
-      return;
-    }
-    
-    const reviewText = document.getElementById('review-text').value;
-    const rating = document.getElementById('rating').value;
-    
-    try {
-      // Get token from cookie
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        .split('=')[1];
+  const reviewForm = document.getElementById('review-form');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
       
-      const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          text: reviewText,
-          rating: parseInt(rating)
-        })
-      });
+      const reviewText = document.getElementById('review-text').value;
+      const rating = document.getElementById('rating').value;
       
-      if (response.ok) {
-        alert('Review submitted successfully!');
-        // Reload reviews to show the new one
-        loadPlaceReviews(placeId);
-        // Clear form
-        reviewForm.reset();
-      } else {
-        alert('Failed to submit review: ' + (response.statusText || 'Server error'));
+      try {
+        // Get token from cookie
+        const tokenCookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='));
+
+        if (!tokenCookie) {
+          throw new Error('Authentication token not found');
+        }
+        
+        const token = tokenCookie.split('=')[1];
+
+        // Add debugging
+        console.log("Submitting review with token:", token.substring(0, 10) + "...");
+        console.log("For place ID:", placeId);
+        console.log("Review text length:", reviewText.length);
+        console.log("Rating:", rating);
+
+
+        const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            text: reviewText,
+            rating: parseInt(rating)
+          })
+        });
+        
+        if (response.ok) {
+          alert('Review submitted successfully!');
+          // Return to the place page
+          window.location.href = `place.html?id=${placeId}`;
+        } else {
+          const errorText = await response.text();
+          console.error("API Error Response:", errorText);
+          throw new Error(`Server responded with ${response.status}: ${response.statusText || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('Error submitting review: ' + error.message);
       }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-      alert('Error submitting review. Please try again.');
-    }
-  });
+    });
+  }
 }

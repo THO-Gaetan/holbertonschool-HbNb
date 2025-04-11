@@ -110,10 +110,12 @@ main label {
     width: 100%;
 }
 
+#reviews-details,
 #reviews {
     padding: 2rem;
 }
 
+#reviews-details h2,
 #reviews h2 {
     font-size: 2rem;
     margin: 20px;
@@ -249,16 +251,25 @@ main label {
     font-size: 1.2rem;
 }
 
+#add-review {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px auto;
+    text-align: center;
+}
+
 .add-review-button {
     display: inline-flex;
     background-color: #09c0a8;
     color: #ffffff;
-    margin-left: 45.5%;
+    align-items: center;
     padding: 0.5rem 1rem;
     border-radius: 10px;
     text-decoration: none;
     font-weight: bold;
     text-align: center;
+    margin: 0 auto;
 }
 
 .form {
@@ -334,4 +345,22 @@ main label {
     font-size: 15px;
     font-weight: bold;
     margin-top: 6.4px;
+}
+
+.login-message {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.login-message a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-message a:hover {
+    text-decoration: underline;
 }

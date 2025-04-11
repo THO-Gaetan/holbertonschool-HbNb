@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Place Details</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.1">
 </head>
 <body>
     <header>
@@ -15,31 +15,16 @@
     </header>
     <main>
         <section id="place-details-id" class="place-details">
+            <h2>Place Details</h2>
         </section>
-        <section id="reviews">
+        <section id="reviews-details">
             <h2>Reviews</h2>
             <div id="add-review">
-                <a href="add_review.html" class="add-review-button">Add Review</a>
-                <form id="review-form" class="form">
-                    <label for="review-text">Your Review:</label>
-                    <textarea id="review-text" name="review-text" required placeholder="Enter your comment"></textarea>
-                    <section id="rating">
-                        <label for="rating">Rating:</label>
-                        <select id="rating" name="rating" required>
-                            <option value="">Select Rating</option>
-                            <option value="1">★ - Poor</option>
-                            <option value="2">★★ - Fair</option>
-                            <option value="3">★★★ - Good</option>
-                            <option value="4">★★★★ - Very Good</option>
-                            <option value="5">★★★★★ - Excellent</option>
-                        </select>
-                        <button type="submit" class="submit">Submit Review</button>
-                    </section>
-                </form>
+                <a href="#" class="add-review-button" id="add-review-link">Add Review</a>
             </div>
         </section>
     </main>
-    <script src="scripts.js"></script>
+    <script src="scripts.js?v=1.1"></script>
     <footer>
         <p>&copy; 2025 HBNB Evolution - All rights reserved</p>
     </footer>
