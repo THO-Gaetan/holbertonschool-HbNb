@@ -19,7 +19,4 @@ class AmenityRepository(SQLAlchemyRepository):
             return amenitie
         return None
     
-    def get_by_ids(self, amenity_ids):
-        """Récupère une liste d'équipements en fonction de leurs IDs."""
-        amenities = Amenitie.query.filter(Amenitie.id.in_(amenity_ids)).all()
-        return amenities
+    

@@ -89,7 +89,10 @@ class PlaceList(Resource):
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
-        return [{'id': place.id, 'title': place.title, 'latitude': place.latitude, 'longitude': place.longitude} for place in places], 200
+        return [{'id': place.id,
+                 'title': place.title,
+                 'latitude': place.latitude,
+                 'longitude': place.longitude} for place in places], 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -100,7 +103,23 @@ class PlaceResource(Resource):
         places = facade.get_place(place_id)
         if not places:
             return {'error': 'Place not found'}, 404
-        return {'id': places.id, 'title': places.title, 'description': places.description, 'price': places.price, 'latitude': places.latitude, 'longitude': places.longitude, 'owner': {'id': places.owner.id, 'first_name': places.owner.first_name, 'last_name': places.owner.last_name, 'email': places.owner.email}}, 200
+        
+        place_amenities = [{'id': amenity.id, 'name': amenity.name} for amenity in places.amenities]
+        
+        return {'id': places.id,
+                'title': places.title,
+                'description': places.description,
+                'price': places.price,
+                'latitude': places.latitude,
+                'longitude': places.longitude,
+                'owner': {
+                    'id': places.owner.id,
+                    'first_name': places.owner.first_name,
+                    'last_name': places.owner.last_name,
+                    'email': places.owner.email
+                    },
+                    'amenities': place_amenities
+                }, 200
 
     @api.response(200, 'Place deleted successfully')
     @api.response(403, 'Unauthorized action')
